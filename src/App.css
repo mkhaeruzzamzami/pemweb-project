@@ -36,3 +36,58 @@
     transform: rotate(360deg);
   }
 }
+
+/* Custom styles */
+body {
+  font-family: "Arial", sans-serif;
+}
+
+.hero-section {
+  background-color: #f8f9fa;
+  padding: 100px 0;
+  text-align: center;
+}
+
+.card {
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+  background-color: #343a40;
+}
+/* Tambahkan di App.css atau file CSS utama Anda */
+.text-pink {
+  color: #ff69b4;
+}
+
+.bg-black {
+  background-color: #000 !important;
+}
+
+/* Style untuk form */
+.bg-dark.text-white::placeholder {
+  color: #ccc !important;
+}
+/* Tambahkan style berikut di file CSS Anda */
+.quote-card {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quote-card .blockquote {
+  font-size: 1.5rem;
+  font-style: italic;
+}
+
+.quote-card p {
+  margin-bottom: 0;
+}

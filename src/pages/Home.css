@@ -1,0 +1,73 @@
+/* Home.css */
+.home-page {
+  font-family: "Arial", sans-serif;
+}
+
+.hero-section {
+  background-image: url("../images/background-hero.jpg"); /* Ganti dengan gambar background Anda */
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 120px 0;
+  text-align: center;
+  position: relative;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: bold;
+  position: relative;
+  color: #ff69b4; /* Warna pink untuk Pincela */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.gallery-container {
+  padding: 60px 0;
+}
+
+.painting-card {
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.painting-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.painting-card .card-img-top {
+  height: 250px;
+  object-fit: cover;
+}
+
+.painting-card .card-body {
+  padding: 20px;
+}
+
+.painting-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
