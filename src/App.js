@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/support" element={<Support />} />
         <Route path="/collections" element={<Collections />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<About props="Eksplor Lebih Lanjut" />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />

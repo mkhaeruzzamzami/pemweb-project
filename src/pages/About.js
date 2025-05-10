@@ -6,7 +6,7 @@ import img2 from "../images/lukiasn_prpirang.webp";
 import img3 from "../images/Lukisan_wanitaddk.webp";
 import "./About.css";
 
-const About = () => {
+const About = ({props}) => {
   return (
     <div
       className="about-background"
@@ -77,7 +77,7 @@ const About = () => {
 
         <div className="text-center mt-4">
           <button className="btn btn-outline-primary">
-            Eksplor Lebih Lanjut
+            {props}
           </button>
         </div>
       </Container>
