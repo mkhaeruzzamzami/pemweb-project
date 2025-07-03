@@ -5,29 +5,29 @@ const Collections = () => {
   const famousPaintings = [
     {
       title: "A View of Mount Megamendung",
-      image: "/images/Lukisan_Megamendug.png",
+      image: "/images/Lukisan_Pangeran_Diponegoro.jpg",
     },
     {
       title: "The Ruins and The Piano",
-      image: "/images/Lukisan_RuinsPiano.png",
+      image: "/images/Lukisan_Pemburuan_Rusa.webp",
     },
   ];
 
   const newPaintings = [
     {
       title: "Pasukan Kita di Bawah Pimpinan Panglima Diponegoro",
-      image: "/images/Lukisan_wanitaddk.webp",
+      image: "/images/Lukisan_Megamendung.webp",
     },
     {
       title: "The Card Players karya Paul Cezanne (1892)",
-      image: "/images/Lukisan_wanitaddk.webp",
+      image: "/images/Lukisan_Theruins_ThePiano.webp",
     },
   ];
 
   return (
     <Container className="my-5">
       <div className="d-flex justify-content-center align-items-center">
-        <img src="/images/Lukisan_biruabstrak.webp" height="450px" />
+        <img src="/images/Bg_Home.jpeg" height="450px" />
       </div>
       {/* Section Lukisan Terkenal */}
       <h2 className="mt-5 mb-4">Lukisan Terkenal</h2>
@@ -64,7 +64,7 @@ const Collections = () => {
         <Col md={6} className="mb-4">
           <Card
             className="h-100 text-center text-white bg-quote"
-            style={{ backgroundImage: `url('/images/Lukisan_wanitaddk.webp')` }}
+            style={{ backgroundImage: `url('/images/Lukisan_Ekspresijiwa.jpg')` }}
           >
             <Card.Body className="bg-overlay p-4">
               <blockquote className="blockquote mb-0">
@@ -76,7 +76,7 @@ const Collections = () => {
         <Col md={6} className="mb-4">
           <Card
             className="h-100 text-center text-white bg-quote"
-            style={{ backgroundImage: `url(/images/Lukisan_wanitaddk.webp)` }}
+            style={{ backgroundImage: `url(/images/Lukisan_Warnaberbicara.jpg)` }}
           >
             <Card.Body className="bg-overlay p-4">
               <blockquote className="blockquote mb-0">

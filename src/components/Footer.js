@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 
 const Footer = () => {
@@ -11,8 +12,9 @@ const Footer = () => {
 
             <Row className="mb-4">
               <Col md={3} className="mb-3 mb-md-0">
-                <p className="mb-1">Menu</p>
-                <p className="mb-1">Collections</p>
+                <p className="mb-1">Home</p>
+                <p className="mb-1">Support</p>
+                 <p className="mb-1">Collections</p>
               </Col>
               <Col md={3} className="mb-3 mb-md-0">
                 <p className="mb-1">Contact</p>

@@ -81,16 +81,20 @@ const Home = () => {
       image: "/images/Lukisan_Pangeran_Diponegoro.jpg",
     },
     {
+      title: "A View of Mount Megamendung",
+      image: "../images/Lukisan_Megamendung.webp",
+    },
+    {
       title: "Kawan – Kawan Revolusi",
       image: "../images/Lukisan_Kawan_Revolusi.jpg",
     },
     {
       title: "Nyi Roro Kidul",
-      image: "/images/Lukisan_Nyirorokidul.jpeg",
+      image: "/images/Lukisan_Nyirorokidul.webp",
     },
     {
-      title: "Potret Diri dan Pipanya",
-      image: "/images/diridanpipanya.jpg",
+      title: "Bali Life",
+      image: "../images/Lukisan_Bali_Life.webp",
     },
     {
       title: "Pemburuan Rusa",

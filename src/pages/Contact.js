@@ -50,7 +50,7 @@ const Contact = () => {
         <Row className="bg-white p-5 shadow rounded">
           <Col md={6}>
             <h4 className="mb-4 fw-bold">Contact us</h4>
-            <Form onSubmit={handleSubmit}>
+            <Form method="POST" onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="formName">
                 <Form.Label>Nama</Form.Label>
                 <Form.Control
@@ -90,7 +90,7 @@ const Contact = () => {
               </Button>
             </Form>
           </Col>
-
+         
           {/* Gambar */}
           <Col
             md={6}

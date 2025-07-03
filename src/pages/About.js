@@ -1,9 +1,9 @@
 import React from "react";
 import { Container, Row, Col, Image } from "react-bootstrap";
-import backgroundImage from "../images/Lukisan_bg2About.jpeg"; // Gambar latar belakang
-import img1 from "../images/Lukisan_bg2About.jpeg"; // Gambar bawah teks
-import img2 from "../images/lukiasn_prpirang.webp";
-import img3 from "../images/Lukisan_wanitaddk.webp";
+import backgroundImage from "../images/Bg_About.jpg"; // Gambar latar belakang
+import img1 from "../images/Lukisan_Theruins_ThePiano.webp"; // Gambar bawah teks
+import img2 from "../images/Lukisan_Megamendung.webp";
+import img3 from "../images/Lukisan_Masa_Kemerdekaan.webp";
 import "./About.css";
 
 const About = ({props}) => {
