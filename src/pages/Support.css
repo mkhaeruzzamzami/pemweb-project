@@ -1,0 +1,39 @@
+.support-page {
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.header-section .header-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 20px;
+}
+
+.side-image-container {
+  text-align: center;
+}
+
+.side-image {
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-caption {
+  margin-top: 20px;
+}
+.bg-quote {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  position: relative;
+  min-height: 250px;
+}
+
+.bg-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparan hitam */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
