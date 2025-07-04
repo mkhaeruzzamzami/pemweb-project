@@ -30,25 +30,6 @@ const Contact = () => {
       style={{ backgroundColor: "#f2f0ff", padding: "60px 0" }}
     >
       <Container>
-<<<<<<< HEAD
-       
-=======
-        {/* Judul & Info Kontak */}
-        <div className="text-center mb-5">
-          <h2 className="fw-bold mb-3">Contact us</h2>
-          <Row className="justify-content-center text-secondary">
-            <Col md={3}>
-              <p>📍 Cirebon</p>
-            </Col>
-            <Col md={3}>
-              <p>✉️ team@pincela.com</p>
-            </Col>
-            <Col md={3}>
-              <p>📞 (0261) 123 2024</p>
-            </Col>
-          </Row>
-        </div>
->>>>>>> a763e6610f6a1b149740bf80954cc57b8a80fc8e
 
         {/* Form & Gambar */}
         <Row className="bg-white p-5 shadow rounded">
