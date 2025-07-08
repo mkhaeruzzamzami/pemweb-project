@@ -7,6 +7,7 @@ import Collections from "./pages/Collections";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Support from "./pages/Support";
+import GalleryItem from "./components/GalleryItem";
 import "./App.css";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/collections" element={<Collections />} />
         <Route path="/about" element={<About props="Eksplor Lebih Lanjut" />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/gallery/:id" element={<GalleryItem />} /> {/* ✅ Route baru */}
       </Routes>
       <Footer />
     </Router>

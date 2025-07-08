@@ -1,5 +1,8 @@
 <?php
-include 'koneksi.php';
+include "koneksi.php";
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
 
 $data = json_decode(file_get_contents("php://input"), true);
 $id = $data['id'];

@@ -1,92 +1,71 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import contactImage from "../images/contact.jpg"; // Ganti sesuai path gambar
-// import img3 from "../images/Lukisan_wanitaddk.webp";
+import React from "react";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import { FaWhatsapp, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import contactImage from "../images/contact.jpg";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    nama: "",
-    email: "",
-    pesan: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Di sini Anda bisa mengirim data ke backend atau melakukan sesuatu dengan formData
-    console.log("Form submitted:", formData);
-  };
-
   return (
     <div
       className="contact-section"
       style={{ backgroundColor: "#f2f0ff", padding: "60px 0" }}
     >
       <Container>
+        <Row className="bg-white p-5 shadow rounded align-items-center">
+          {/* Info Kontak */}
+          <Col md={20}>
+            <h4 className="mb-4 fw-bold">Hubungi Kami</h4>
 
-        {/* Form & Gambar */}
-        <Row className="bg-white p-5 shadow rounded">
-          <Col md={6}>
-            <h4 className="mb-4 fw-bold">Contact us</h4>
-            <Form method="POST" onSubmit={handleSubmit}>
-              <Form.Group className="mb-3" controlId="formName">
-                <Form.Label>Nama</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Masukkan nama anda"
-                  name="nama"
-                  value={formData.nama}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+            <Card className="mb-3 border-0">
+              <Card.Body className="d-flex align-items-center">
+                <FaWhatsapp className="me-3 text-success fs-4" />
+                <div>
+                  <strong>WhatsApp:</strong><br />
+                  <a
+                    href="https://wa.me/6285712983804"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    +62 812-3456-7890
+                  </a>
+                </div>
+              </Card.Body>
+            </Card>
 
-              <Form.Group className="mb-3" controlId="formEmail">
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Masukkan email anda"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+            <Card className="mb-3 border-0">
+              <Card.Body className="d-flex align-items-center">
+                <FaEnvelope className="me-3 text-danger fs-4" />
+                <div>
+                  <strong>Email:</strong><br />
+                  <a href="mailto:aaaaa@gmail.com">pincela@gmail.com</a>
+                </div>
+              </Card.Body>
+            </Card>
 
-              <Form.Group className="mb-4" controlId="formMessage">
-                <Form.Label>Pesan</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Tulis pesan anda"
-                  name="pesan"
-                  value={formData.pesan}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-
-              <Button variant="primary" type="submit">
-                Kirim
-              </Button>
-            </Form>
+            <Card className="mb-3 border-0">
+              <Card.Body className="d-flex align-items-center">
+                <FaMapMarkerAlt className="me-3 text-primary fs-4" />
+                <div>
+                  <strong>Alamat:</strong><br />
+                  STIKOM Poltek Cirebon
+                </div>
+              </Card.Body>
+            </Card>
           </Col>
-         
+
           {/* Gambar */}
-          <Col
-            md={6}
-            className="d-flex align-items-center justify-content-center"
-          >
-            <img
-              src={contactImage}
-              alt="Map"
-              className="img-fluid rounded"
-              style={{ maxHeight: "300px", objectFit: "cover" }}
-            />
+          <Col md={15} className="text-center">
+          <img
+            src={contactImage}
+            alt="Ilustrasi kontak"
+            className="img-fluid rounded"
+            style={{
+              width: "100%",
+              maxWidth: "500px",
+              height: "auto",
+              objectFit: "cover"
+            }}
+          />
+
           </Col>
         </Row>
       </Container>
