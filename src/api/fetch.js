@@ -64,3 +64,47 @@ export async function deleteLukisan(id) {
     return { status: "error", message: error.message };
   }
 }
+
+export async function sendLike(id) {
+  try {
+    const response = await fetch(`${API_URL}/like_support.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    return await response.json();
+  } catch (error) {
+    return { status: "error", message: error.message };
+  }
+}
+
+export async function sendComment(id, comment) {
+  if (!id || !comment) {
+    return { status: "error", message: "ID dan komentar tidak boleh kosong" };
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/comment_support.php`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: parseInt(id),
+        comment,
+      }),
+    });
+
+    if (!response.ok) {
+      return {
+        status: "error",
+        message: `HTTP ${response.status}: ${response.statusText}`,
+      };
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    return { status: "error", message: error.message };
+  }
+}

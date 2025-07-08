@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Card, Button, Form } from "react-bootstrap";
-import { getAllLukisan } from "../api/fetch";
+import { getAllLukisan, sendComment, sendLike } from "../api/fetch";
 
 const staticPaintings = [
   {
@@ -54,6 +54,7 @@ const GalleryItem = () => {
       const found = data.find((item) => String(item.id) === id);
       if (found) {
         setLukisan({
+          id: found.id,
           title: found.judul,
           image: found.gambar_url,
           description: found.deskripsi,
@@ -62,6 +63,8 @@ const GalleryItem = () => {
           tanggal: found.tanggal_pembuatan,
           isOffline: false,
         });
+        setLikes(found.likes || 0);
+        setComments(JSON.parse(found.comments || "[]"));
       } else {
         setLukisan(null);
       }
@@ -84,17 +87,58 @@ const GalleryItem = () => {
     }
   };
 
-  const handleAddComment = (e) => {
+  const handleAddComment = async (e) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      const newEntry = {
-        user: "User",
-        text: newComment.trim(),
-      };
-      setComments([...comments, newEntry]);
-      setNewComment("");
+
+    const trimmed = newComment.trim();
+    if (!trimmed) return;
+
+    const entry = {
+      user: "User",
+      text: trimmed,
+    };
+
+    setComments((prev) => [...prev, entry]);
+    setNewComment("");
+
+    if (lukisan.isOffline) return;
+
+    try {
+      const res = await sendComment(lukisan.id, entry);
+
+      if (res.status !== "success") {
+        console.warn("Gagal menyimpan komentar:", res.message);
+      }
+    } catch (error) {
+      console.error("Gagal kirim komentar ke backend:", error);
     }
   };
+
+
+  const handleLike = async () => {
+    if (lukisan.isOffline) {
+      setLikes((prev) => prev + 1); // Tambah lokal aja kalau offline
+      return;
+    }
+
+    try {
+      const res = await sendLike(lukisan.id);
+
+      if (res.status === "success") {
+        // Ambil ulang data lukisan untuk update jumlah like
+        const data = await getAllLukisan();
+        const updated = data.find((item) => String(item.id) === String(id));
+        if (updated && updated.likes !== undefined) {
+          setLikes(updated.likes);
+        }
+      } else {
+        console.warn("Gagal menyimpan like ke backend:", res.message);
+      }
+    } catch (error) {
+      console.error("Error saat mengirim like:", error);
+    }
+  };
+
 
   if (!lukisan) {
     return <p className="text-center my-5">Lukisan tidak ditemukan.</p>;
@@ -106,47 +150,25 @@ const GalleryItem = () => {
         <Card.Img variant="top" src={lukisan.image} alt={lukisan.title} />
         <Card.Body>
           <Card.Title>{lukisan.title}</Card.Title>
-          {lukisan.tema && (
-            <Card.Text>
-              <strong>Tema:</strong> {lukisan.tema}
-            </Card.Text>
-          )}
-          {lukisan.pembuat && (
-            <Card.Text>
-              <strong>Pembuat:</strong> {lukisan.pembuat}
-            </Card.Text>
-          )}
-          {lukisan.tanggal && (
-            <Card.Text>
-              <strong>Tanggal:</strong> {lukisan.tanggal}
-            </Card.Text>
-          )}
+          {lukisan.tema && <Card.Text><strong>Tema:</strong> {lukisan.tema}</Card.Text>}
+          {lukisan.pembuat && <Card.Text><strong>Pembuat:</strong> {lukisan.pembuat}</Card.Text>}
+          {lukisan.tanggal && <Card.Text><strong>Tanggal:</strong> {lukisan.tanggal}</Card.Text>}
           <Card.Text>{lukisan.description}</Card.Text>
 
-          {/* Horizontal: Like, Comment, Share */}
           <div className="d-flex gap-3 justify-content-center mb-3">
-            <Button variant="outline-danger" onClick={() => setLikes(likes + 1)}>
+            <Button variant="outline-danger" onClick={handleLike}>
               ❤️ Like ({likes})
             </Button>
-
-            <Button
-              variant="outline-primary"
-              onClick={() => setShowComments(!showComments)}
-            >
+            <Button variant="outline-primary" onClick={() => setShowComments(!showComments)}>
               💬 Comment
             </Button>
-
             <Button variant="outline-success" onClick={handleShare}>
               🔗 Share
             </Button>
           </div>
 
-          {/* Comment bubble: muncul kalau showComments true */}
           {showComments && (
-            <div
-              className="text-start p-3 border rounded shadow-sm mb-3"
-              style={{ background: "#f8f9fa" }}
-            >
+            <div className="text-start p-3 border rounded shadow-sm mb-3" style={{ background: "#f8f9fa" }}>
               <Form onSubmit={handleAddComment} className="mb-3">
                 <Form.Group>
                   <Form.Control
@@ -166,14 +188,11 @@ const GalleryItem = () => {
                   <h6>Komentar:</h6>
                   {comments.map((comment, idx) => (
                     <div key={idx} className="d-flex align-items-start mb-2">
-                      <div
-                        className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center"
-                        style={{ width: "30px", height: "30px", fontSize: "0.8rem" }}
-                      >
+                      <div className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style={{ width: "30px", height: "30px", fontSize: "0.8rem" }}>
                         U
                       </div>
                       <div className="ms-2">
-                        <strong>User</strong>
+                        <strong>{comment.user}</strong>
                         <div>{comment.text}</div>
                       </div>
                     </div>
