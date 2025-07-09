@@ -1,110 +1,80 @@
 const API_URL = "http://localhost/pincela/api";
 
-// CREATE (Submit Lukisan Baru)
+
+// === CREATE ===
 export async function sendSupportForm(data) {
   const formData = new FormData();
   for (let key in data) {
     formData.append(key, data[key]);
   }
 
-  try {
-    const response = await fetch(`${API_URL}/submit_support.php`, {
-      method: "POST",
-      body: formData,
-    });
+  const res = await fetch(`${API_URL}/lukisan/index.php`, {
+    method: "POST",
+    body: formData,
+  });
 
-    return await response.json();
-  } catch (error) {
-    return { status: "error", message: error.message };
-  }
+  return await res.json();
 }
 
-// READ (Ambil Semua Data Lukisan)
+// === READ ===
 export async function getAllLukisan() {
-  try {
-    const response = await fetch(`${API_URL}/read_support.php`);
-    return await response.json();
-  } catch (error) {
-    return [];
-  }
+  const res = await fetch(`${API_URL}/lukisan/index.php`);
+  return await res.json();
 }
 
-// UPDATE Lukisan
+// === UPDATE ===
 export async function updateLukisan(data) {
   const formData = new FormData();
   for (let key in data) {
     formData.append(key, data[key]);
   }
 
-  try {
-    const response = await fetch(`${API_URL}/update_support.php`, {
-      method: "POST",
-      body: formData,
-    });
+  const res = await fetch(`${API_URL}/lukisan/update.php`, {
+    method: "POST",
+    body: formData,
+  });
 
-    return await response.json();
-  } catch (error) {
-    return { status: "error", message: error.message };
-  }
+  return await res.json();
 }
 
-// DELETE Lukisan
+// === DELETE ===
 export async function deleteLukisan(id) {
-  try {
-    const response = await fetch(`${API_URL}/delete_support.php`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id }),
-    });
+  const res = await fetch(`${API_URL}/lukisan/delete.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id }),
+  });
 
-    return await response.json();
-  } catch (error) {
-    return { status: "error", message: error.message };
-  }
+  return await res.json();
 }
 
+// === LIKE ===
 export async function sendLike(id) {
-  try {
-    const response = await fetch(`${API_URL}/like_support.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    return await response.json();
-  } catch (error) {
-    return { status: "error", message: error.message };
-  }
+  const res = await fetch(`${API_URL}/lukisan/like.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id }),
+  });
+
+  return await res.json();
 }
 
+// === COMMENT ===
 export async function sendComment(id, comment) {
-  if (!id || !comment) {
-    return { status: "error", message: "ID dan komentar tidak boleh kosong" };
-  }
+  const res = await fetch(`${API_URL}/lukisan/comment.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: parseInt(id),
+      comment,
+    }),
+  });
 
-  try {
-    const response = await fetch(`${API_URL}/comment_support.php`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: parseInt(id),
-        comment,
-      }),
-    });
-
-    if (!response.ok) {
-      return {
-        status: "error",
-        message: `HTTP ${response.status}: ${response.statusText}`,
-      };
-    }
-
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    return { status: "error", message: error.message };
-  }
+  return await res.json();
 }
