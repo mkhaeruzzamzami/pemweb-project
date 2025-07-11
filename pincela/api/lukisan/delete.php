@@ -1,17 +1,26 @@
 <?php
-include "koneksi.php";
-
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
+header("Content-Type: application/json");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
 
-$data = json_decode(file_get_contents("php://input"), true);
-$id = $data['id'];
+require_once __DIR__ . '/../koneksi.php';
 
-$query = "DELETE FROM lukisan WHERE id = $id";
+$data = json_decode(file_get_contents("php://input"));
 
-if (mysqli_query($conn, $query)) {
-    echo json_encode(["status" => "success"]);
+if (!isset($data->id)) {
+    echo json_encode(["status" => "error", "message" => "ID tidak ditemukan"]);
+    exit;
+}
+
+$id = intval($data->id);
+
+$stmt = $conn->prepare("DELETE FROM lukisan WHERE id = ?");
+$stmt->bind_param("i", $id);
+
+if ($stmt->execute()) {
+    echo json_encode(["status" => "success", "message" => "Lukisan berhasil dihapus"]);
 } else {
-    echo json_encode(["status" => "error", "message" => mysqli_error($conn)]);
+    echo json_encode(["status" => "error", "message" => "Gagal hapus lukisan"]);
 }
 ?>

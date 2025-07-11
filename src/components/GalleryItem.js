@@ -1,38 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Card, Button, Form } from "react-bootstrap";
-import { getAllLukisan, sendComment, sendLike } from "../api/fetch";
-
-const staticPaintings = [
-  {
-    id: "offline-1",
-    title: "A View of Mount Megamendung",
-    image: "/images/Lukisan_Pangeran_Diponegoro.jpg",
-    description:
-      "Lukisan pemandangan gunung megamendung yang menggambarkan keindahan alam dan kekuatan sejarah lokal.",
-  },
-  {
-    id: "offline-2",
-    title: "The Ruins and The Piano",
-    image: "/images/Lukisan_Pemburuan_Rusa.webp",
-    description:
-      "Sebuah lukisan kontemporer yang menunjukkan kehancuran dan harmoni melalui piano klasik.",
-  },
-  {
-    id: "offline-3",
-    title: "Pasukan Kita di Bawah Pimpinan Panglima Diponegoro",
-    image: "/images/Lukisan_Megamendung.webp",
-    description:
-      "Sebuah karya heroik yang menggambarkan semangat perjuangan pasukan Pangeran Diponegoro.",
-  },
-  {
-    id: "offline-4",
-    title: "The Card Players karya Paul Cezanne (1892)",
-    image: "/images/Lukisan_Theruins_ThePiano.webp",
-    description:
-      "Lukisan klasik yang menggambarkan kehidupan sosial dan permainan kartu abad ke-19.",
-  },
-];
+import { getAllLukisan, sendComment, sendLike, getComments } from "../api/fetch";
 
 const GalleryItem = () => {
   const { id } = useParams();
@@ -44,14 +13,9 @@ const GalleryItem = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const staticData = staticPaintings.find((item) => item.id === id);
-      if (staticData) {
-        setLukisan({ ...staticData, isOffline: true });
-        return;
-      }
-
       const data = await getAllLukisan();
       const found = data.find((item) => String(item.id) === id);
+
       if (found) {
         setLukisan({
           id: found.id,
@@ -61,10 +25,11 @@ const GalleryItem = () => {
           tema: found.tema,
           pembuat: found.nama_pembuat,
           tanggal: found.tanggal_pembuatan,
-          isOffline: false,
         });
         setLikes(found.likes || 0);
-        setComments(JSON.parse(found.comments || "[]"));
+
+        const komentar = await getComments(found.id);
+        setComments(komentar);
       } else {
         setLukisan(null);
       }
@@ -75,13 +40,11 @@ const GalleryItem = () => {
 
   const handleShare = () => {
     if (navigator.share) {
-      navigator
-        .share({
-          title: lukisan.title,
-          text: "Cek lukisan keren ini di Pincela!",
-          url: window.location.href,
-        })
-        .catch((err) => console.error("Gagal share:", err));
+      navigator.share({
+        title: lukisan.title,
+        text: "Cek lukisan keren ini di Pincela!",
+        url: window.location.href,
+      }).catch((err) => console.error("Gagal share:", err));
     } else {
       alert("Browser tidak mendukung fitur share.");
     }
@@ -93,20 +56,16 @@ const GalleryItem = () => {
     const trimmed = newComment.trim();
     if (!trimmed) return;
 
-    const entry = {
-      user: "User",
-      text: trimmed,
-    };
-
-    setComments((prev) => [...prev, entry]);
-    setNewComment("");
-
-    if (lukisan.isOffline) return;
+    const nama = "User"; // kamu bisa ganti dinamis kalau pakai sistem login nanti
+    const komentar = trimmed;
 
     try {
-      const res = await sendComment(lukisan.id, entry);
+      const res = await sendComment(lukisan.id, nama, komentar);
 
-      if (res.status !== "success") {
+      if (res.status === "success") {
+        setComments((prev) => [...prev, { nama, komentar }]);
+        setNewComment("");
+      } else {
         console.warn("Gagal menyimpan komentar:", res.message);
       }
     } catch (error) {
@@ -114,20 +73,12 @@ const GalleryItem = () => {
     }
   };
 
-
   const handleLike = async () => {
-    if (lukisan.isOffline) {
-      setLikes((prev) => prev + 1); // Tambah lokal aja kalau offline
-      return;
-    }
-
     try {
       const res = await sendLike(lukisan.id);
-
       if (res.status === "success") {
-        // Ambil ulang data lukisan untuk update jumlah like
         const data = await getAllLukisan();
-        const updated = data.find((item) => String(item.id) === String(id));
+        const updated = data.find((item) => String(item.id) === id);
         if (updated && updated.likes !== undefined) {
           setLikes(updated.likes);
         }
@@ -139,7 +90,6 @@ const GalleryItem = () => {
     }
   };
 
-
   if (!lukisan) {
     return <p className="text-center my-5">Lukisan tidak ditemukan.</p>;
   }
@@ -147,7 +97,14 @@ const GalleryItem = () => {
   return (
     <Container className="my-5 text-center">
       <Card className="mx-auto" style={{ maxWidth: "600px" }}>
-        <Card.Img variant="top" src={lukisan.image} alt={lukisan.title} />
+        <Card.Img
+          variant="top"
+          src={lukisan.image_url}
+          // onError={(e) => {
+          //   e.target.onerror = null;
+          //   e.target.src = "/images/fallback.jpg"; // atau gambar lokal kamu
+          // }}
+        />
         <Card.Body>
           <Card.Title>{lukisan.title}</Card.Title>
           {lukisan.tema && <Card.Text><strong>Tema:</strong> {lukisan.tema}</Card.Text>}
@@ -189,11 +146,11 @@ const GalleryItem = () => {
                   {comments.map((comment, idx) => (
                     <div key={idx} className="d-flex align-items-start mb-2">
                       <div className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style={{ width: "30px", height: "30px", fontSize: "0.8rem" }}>
-                        U
+                        {comment.nama[0]?.toUpperCase() || "?"}
                       </div>
                       <div className="ms-2">
-                        <strong>{comment.user}</strong>
-                        <div>{comment.text}</div>
+                        <strong>{comment.nama}</strong>
+                        <div>{comment.komentar}</div>
                       </div>
                     </div>
                   ))}

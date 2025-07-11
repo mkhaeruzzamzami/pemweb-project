@@ -4,40 +4,32 @@ import { Link } from "react-router-dom";
 import { getAllLukisan } from "../api/fetch";
 
 const Collections = () => {
-  // 🔒 Data hardcoded (lukisan offline)
-  const paintings = [
-    {
-      id: "offline-1",
-      title: "A View of Mount Megamendung",
-      image: "/images/Lukisan_Pangeran_Diponegoro.jpg",
-    },
-    {
-      id: "offline-2",
-      title: "The Ruins and The Piano",
-      image: "/images/Lukisan_Pemburuan_Rusa.webp",
-    },
-    {
-      id: "offline-3",
-      title: "Pasukan Kita di Bawah Pimpinan Panglima Diponegoro",
-      image: "/images/Lukisan_Megamendung.webp",
-    },
-    {
-      id: "offline-4",
-      title: "The Card Players karya Paul Cezanne (1892)",
-      image: "/images/Lukisan_Theruins_ThePiano.webp",
-    },
-  ];
-
-  // 🔄 Data dari database
   const [lukisanList, setLukisanList] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getAllLukisan();
-      setLukisanList(data);
+      try {
+        const data = await getAllLukisan();
+
+        console.log("📦 Lukisan dari API:", data);
+        console.log("📦 Data isi lukisan:", lukisanList);
+
+
+        // Validasi supaya tidak error .map is not a function
+        if (Array.isArray(data)) {
+          setLukisanList(data);
+        } else {
+          console.error("Data lukisan tidak berbentuk array:", data);
+          setLukisanList([]);
+        }
+      } catch (error) {
+        console.error("Gagal fetch data lukisan:", error);
+        setLukisanList([]);
+      }
     };
+
     fetchData();
-  }, []);
+  }, [lukisanList]);
 
   return (
     <Container className="my-5">
@@ -47,52 +39,40 @@ const Collections = () => {
 
       <h2 className="mt-5 mb-4">Koleksi Lukisan</h2>
       <Row className="mb-5">
-        {/* Render lukisan dari database */}
-        {lukisanList.map((painting) => (
-          <Col md={6} key={`online-${painting.id}`}>
-            <Link
-              to={`/gallery/${painting.id}`}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Card className="mb-4">
-                <Card.Img
-                  variant="top"
-                  src={painting.gambar_url}
-                  alt={painting.judul}
-                  style={{ height: "300px", objectFit: "cover" }}
-                />
-                <Card.Body>
-                  <Card.Title>{painting.judul}</Card.Title>
-                </Card.Body>
-              </Card>
-            </Link>
-          </Col>
-        ))}
-
-        {/* Render lukisan hardcoded */}
-        {paintings.map((painting) => (
-          <Col md={6} key={painting.id}>
-            <Link
-              to={`/gallery/${painting.id}`}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Card className="mb-4">
-                <Card.Img
-                  variant="top"
-                  src={painting.image}
-                  alt={painting.title}
-                  style={{ height: "300px", objectFit: "cover" }}
-                />
-                <Card.Body>
-                  <Card.Title>{painting.title}</Card.Title>
-                </Card.Body>
-              </Card>
-            </Link>
-          </Col>
-        ))}
+        {lukisanList.length > 0 ? (
+          lukisanList.map((painting) => (
+            <Col md={6} lg={4} key={painting.id}>
+              <Link
+                to={`/gallery/${painting.id}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <Card className="mb-4 h-100 shadow">
+                  <Card.Img
+                    variant="top"
+                    src={painting.gambar_url}
+                    alt={painting.judul}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/images/fallback.jpg";
+                    }}
+                    style={{ height: "300px", objectFit: "cover" }}
+                  />
+                  <Card.Body>
+                    <Card.Title>{painting.judul}</Card.Title>
+                    <Card.Text>
+                      <strong>Tema:</strong> {painting.tema}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+          ))
+        ) : (
+          <p>Tidak ada lukisan ditemukan dari database.</p>
+        )}
       </Row>
 
-      {/* Quotes section tetap */}
+      {/* Quotes Section */}
       <Row className="my-5">
         <Col md={6} className="mb-4">
           <Card
