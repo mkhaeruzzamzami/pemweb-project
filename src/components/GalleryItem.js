@@ -20,7 +20,7 @@ const GalleryItem = () => {
         setLukisan({
           id: found.id,
           title: found.judul,
-          image: found.gambar_url,
+          image: found.gambar_url, // langsung pakai dari database
           description: found.deskripsi,
           tema: found.tema,
           pembuat: found.nama_pembuat,
@@ -40,11 +40,13 @@ const GalleryItem = () => {
 
   const handleShare = () => {
     if (navigator.share) {
-      navigator.share({
-        title: lukisan.title,
-        text: "Cek lukisan keren ini di Pincela!",
-        url: window.location.href,
-      }).catch((err) => console.error("Gagal share:", err));
+      navigator
+        .share({
+          title: lukisan.title,
+          text: "Cek lukisan keren ini di Pincela!",
+          url: window.location.href,
+        })
+        .catch((err) => console.error("Gagal share:", err));
     } else {
       alert("Browser tidak mendukung fitur share.");
     }
@@ -56,12 +58,11 @@ const GalleryItem = () => {
     const trimmed = newComment.trim();
     if (!trimmed) return;
 
-    const nama = "User"; // kamu bisa ganti dinamis kalau pakai sistem login nanti
+    const nama = "User"; // placeholder
     const komentar = trimmed;
 
     try {
       const res = await sendComment(lukisan.id, nama, komentar);
-
       if (res.status === "success") {
         setComments((prev) => [...prev, { nama, komentar }]);
         setNewComment("");
@@ -96,27 +97,43 @@ const GalleryItem = () => {
 
   return (
     <Container className="my-5 text-center">
-      <Card className="mx-auto" style={{ maxWidth: "600px" }}>
+      <Card className="mx-auto shadow" style={{ maxWidth: "600px" }}>
         <Card.Img
           variant="top"
-          src={lukisan.image_url}
-          // onError={(e) => {
-          //   e.target.onerror = null;
-          //   e.target.src = "/images/fallback.jpg"; // atau gambar lokal kamu
-          // }}
+          src={lukisan.image}
+          alt={lukisan.title}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/images/fallback.jpg";
+          }}
         />
         <Card.Body>
           <Card.Title>{lukisan.title}</Card.Title>
-          {lukisan.tema && <Card.Text><strong>Tema:</strong> {lukisan.tema}</Card.Text>}
-          {lukisan.pembuat && <Card.Text><strong>Pembuat:</strong> {lukisan.pembuat}</Card.Text>}
-          {lukisan.tanggal && <Card.Text><strong>Tanggal:</strong> {lukisan.tanggal}</Card.Text>}
+          {lukisan.tema && (
+            <Card.Text>
+              <strong>Tema:</strong> {lukisan.tema}
+            </Card.Text>
+          )}
+          {lukisan.pembuat && (
+            <Card.Text>
+              <strong>Pembuat:</strong> {lukisan.pembuat}
+            </Card.Text>
+          )}
+          {lukisan.tanggal && (
+            <Card.Text>
+              <strong>Tanggal:</strong> {lukisan.tanggal}
+            </Card.Text>
+          )}
           <Card.Text>{lukisan.description}</Card.Text>
 
           <div className="d-flex gap-3 justify-content-center mb-3">
             <Button variant="outline-danger" onClick={handleLike}>
               ❤️ Like ({likes})
             </Button>
-            <Button variant="outline-primary" onClick={() => setShowComments(!showComments)}>
+            <Button
+              variant="outline-primary"
+              onClick={() => setShowComments(!showComments)}
+            >
               💬 Comment
             </Button>
             <Button variant="outline-success" onClick={handleShare}>
@@ -125,7 +142,10 @@ const GalleryItem = () => {
           </div>
 
           {showComments && (
-            <div className="text-start p-3 border rounded shadow-sm mb-3" style={{ background: "#f8f9fa" }}>
+            <div
+              className="text-start p-3 border rounded shadow-sm mb-3"
+              style={{ background: "#f8f9fa" }}
+            >
               <Form onSubmit={handleAddComment} className="mb-3">
                 <Form.Group>
                   <Form.Control
@@ -144,8 +164,18 @@ const GalleryItem = () => {
                 <div className="mt-3">
                   <h6>Komentar:</h6>
                   {comments.map((comment, idx) => (
-                    <div key={idx} className="d-flex align-items-start mb-2">
-                      <div className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style={{ width: "30px", height: "30px", fontSize: "0.8rem" }}>
+                    <div
+                      key={idx}
+                      className="d-flex align-items-start mb-2"
+                    >
+                      <div
+                        className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center"
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          fontSize: "0.8rem",
+                        }}
+                      >
                         {comment.nama[0]?.toUpperCase() || "?"}
                       </div>
                       <div className="ms-2">
