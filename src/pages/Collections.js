@@ -10,11 +10,6 @@ const Collections = () => {
     const fetchData = async () => {
       try {
         const data = await getAllLukisan();
-
-        console.log("📦 Lukisan dari API:", data);
-        console.log("📦 Data isi lukisan:", lukisanList);
-
-
         // Validasi supaya tidak error .map is not a function
         if (Array.isArray(data)) {
           setLukisanList(data);

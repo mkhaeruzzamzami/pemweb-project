@@ -1,78 +1,98 @@
 <?php
+require_once __DIR__ . '/../koneksi.php';
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
 
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+// Cek method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(["status" => "error", "message" => "Hanya menerima POST request"]);
+    http_response_code(405);
+    echo json_encode(["status" => "error", "message" => "Metode tidak diizinkan"]);
     exit;
 }
-require_once __DIR__ . '/../koneksi.php';
-// Ambil data dari form
-$id            = $_POST['id'] ?? null;
-$nama_lengkap  = $_POST['nama_lengkap'] ?? '';
-$email         = $_POST['email'] ?? '';
-$tema          = $_POST['tema'] ?? '';
-$judul         = $_POST['judul'] ?? '';
-$tanggal       = $_POST['tanggal_pembuatan'] ?? '';
-$nama_pembuat  = $_POST['nama_pembuat'] ?? '';
-$deskripsi     = $_POST['deskripsi'] ?? '';
-$gambar        = null;
 
-// Validasi ID
+$id = intval($_POST['id'] ?? 0);
 if (!$id) {
-    echo json_encode(["status" => "error", "message" => "ID lukisan tidak ditemukan"]);
+    http_response_code(400);
+    echo json_encode(["status" => "error", "message" => "ID tidak valid"]);
     exit;
 }
 
-// Cari user_id berdasarkan email
-$stmt_user = $conn->prepare("SELECT id FROM users WHERE email = ?");
-$stmt_user->bind_param("s", $email);
-$stmt_user->execute();
-$result_user = $stmt_user->get_result();
+// Inisialisasi variabel update
+$fields = [];
+$params = [];
+$types  = "";
 
-if ($result_user->num_rows > 0) {
-    $user_id = $result_user->fetch_assoc()['id'];
-} else {
-    $stmt_insert = $conn->prepare("INSERT INTO users (nama_lengkap, email) VALUES (?, ?)");
-    $stmt_insert->bind_param("ss", $nama_lengkap, $email);
-    if (!$stmt_insert->execute()) {
-        echo json_encode(["status" => "error", "message" => "Gagal menambahkan user"]);
-        exit;
+// Field yang boleh diupdate
+$allowedFields = [
+    "nama_lengkap", "email", "tema", "judul",
+    "tanggal_pembuatan", "nama_pembuat", "deskripsi"
+];
+
+foreach ($allowedFields as $field) {
+    if (!empty($_POST[$field])) {
+        $fields[] = "$field = ?";
+        $params[] = trim($_POST[$field]);
+        $types   .= "s";
     }
-    $user_id = $stmt_insert->insert_id;
 }
 
 // Handle upload gambar jika ada
-if (!empty($_FILES['gambar']['name'])) {
-    $uploadDir = __DIR__ . "/../uploads/";
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
+if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] === UPLOAD_ERR_OK) {
+    $uploadDir = __DIR__ . '/../uploads/';
+    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
-    $fileName = time() . "_" . basename($_FILES["gambar"]["name"]);
-    $targetFile = $uploadDir . $fileName;
+    $filename = uniqid() . '_' . basename($_FILES['gambar']['name']);
+    $targetPath = $uploadDir . $filename;
 
-    if (move_uploaded_file($_FILES["gambar"]["tmp_name"], $targetFile)) {
-        $gambar = $fileName;
+    if (move_uploaded_file($_FILES['gambar']['tmp_name'], $targetPath)) {
+        $fields[] = "gambar = ?";
+        $params[] = $filename;
+        $types   .= "s";
     } else {
-        echo json_encode(["status" => "error", "message" => "Upload gambar gagal"]);
+        http_response_code(500);
+        echo json_encode(["status" => "error", "message" => "Gagal upload gambar"]);
         exit;
     }
 }
 
-// Buat query update
-if ($gambar) {
-    $stmt = $conn->prepare("UPDATE lukisan SET user_id=?, tema=?, judul=?, tanggal_pembuatan=?, nama_pembuat=?, deskripsi=?, gambar=? WHERE id=?");
-    $stmt->bind_param("issssssi", $user_id, $tema, $judul, $tanggal, $nama_pembuat, $deskripsi, $gambar, $id);
-} else {
-    $stmt = $conn->prepare("UPDATE lukisan SET user_id=?, tema=?, judul=?, tanggal_pembuatan=?, nama_pembuat=?, deskripsi=? WHERE id=?");
-    $stmt->bind_param("isssssi", $user_id, $tema, $judul, $tanggal, $nama_pembuat, $deskripsi, $id);
+// Jika tidak ada data dikirim
+if (empty($fields)) {
+    http_response_code(400);
+    echo json_encode(["status" => "error", "message" => "Tidak ada data yang dikirim"]);
+    exit;
 }
+
+// Tambahkan ID ke akhir query
+$params[] = $id;
+$types .= "i";
+
+$query = "UPDATE lukisan SET " . implode(', ', $fields) . " WHERE id = ?";
+$stmt = $conn->prepare($query);
+
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => "Query gagal: " . $conn->error]);
+    exit;
+}
+
+$stmt->bind_param($types, ...$params);
 
 if ($stmt->execute()) {
     echo json_encode(["status" => "success", "message" => "Lukisan berhasil diupdate"]);
 } else {
-    echo json_encode(["status" => "error", "message" => $conn->error]);
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => "Gagal update: " . $stmt->error]);
 }
+
+$stmt->close();
+$conn->close();
 ?>

@@ -1,41 +1,51 @@
-const API_URL = "http://localhost/pemweb-project-main/pincela/api";
-export const API_UPLOAD_URL = "http://localhost/pemweb-project-main/pincela/api/uploads";
+const API_URL = "http://localhost/pincela/api";
+export const API_UPLOAD_URL = "http://localhost/pincela/api/uploads";
 
 // === CREATE ===
 export async function sendSupportForm(data) {
   const formData = new FormData();
   for (let key in data) {
-    formData.append(key, data[key]);
+    if (data[key] !== undefined && data[key] !== null) {
+      formData.append(key, data[key]);
+    }
   }
 
   try {
-    const res = await fetch(`${API_URL}/lukisan/index.php`, {
+    const res = await fetch(`${API_URL}/lukisan/create.php`, {
       method: "POST",
       body: formData,
     });
 
-    const text = await res.text();
-    return JSON.parse(text);
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await res.json();
+    } else {
+      const text = await res.text();
+      console.warn("⚠️ Respon bukan JSON (CREATE):", text);
+      throw new Error("Respon bukan JSON.");
+    }
   } catch (err) {
-    console.error("Gagal parse JSON:", err);
-    return { status: "error", message: "Terjadi kesalahan saat mengirim data." };
+    console.error("❌ Gagal CREATE:", err);
+    return { status: "error", message: "Terjadi kesalahan saat menyimpan lukisan." };
   }
 }
 
 // === READ ===
 export async function getAllLukisan() {
   try {
-    const response = await fetch(`${API_URL}/lukisan/read.php`); // GET aja cukup
-    const result = await response.json();
+    const res = await fetch(`${API_URL}/lukisan/read.php`);
+    const contentType = res.headers.get("content-type");
 
-    if (result.status === "success" && Array.isArray(result.data)) {
-      return result.data;
+    if (contentType && contentType.includes("application/json")) {
+      const result = await res.json();
+      return result.status === "success" && Array.isArray(result.data) ? result.data : [];
     } else {
-      console.error("Data lukisan tidak valid:", result);
+      const text = await res.text();
+      console.warn("⚠️ Respon bukan JSON (READ):", text);
       return [];
     }
   } catch (error) {
-    console.error("Gagal fetch lukisan:", error);
+    console.error("❌ Gagal fetch lukisan:", error);
     return [];
   }
 }
@@ -43,9 +53,16 @@ export async function getAllLukisan() {
 // === UPDATE ===
 export async function updateLukisan(data) {
   const formData = new FormData();
-  for (let key in data) {
-    formData.append(key, data[key]);
-  }
+
+  if (data.id) formData.append("id", data.id);
+  if (data.nama_lengkap) formData.append("nama_lengkap", data.nama_lengkap);
+  if (data.email) formData.append("email", data.email);
+  if (data.tema) formData.append("tema", data.tema);
+  if (data.judul) formData.append("judul", data.judul);
+  if (data.tanggal_pembuatan) formData.append("tanggal_pembuatan", data.tanggal_pembuatan);
+  if (data.nama_pembuat) formData.append("nama_pembuat", data.nama_pembuat);
+  if (data.deskripsi) formData.append("deskripsi", data.deskripsi);
+  if (data.gambar instanceof File) formData.append("gambar", data.gambar);
 
   try {
     const res = await fetch(`${API_URL}/lukisan/update.php`, {
@@ -53,9 +70,16 @@ export async function updateLukisan(data) {
       body: formData,
     });
 
-    return await res.json();
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await res.json();
+    } else {
+      const text = await res.text();
+      console.warn("⚠️ Respon bukan JSON (UPDATE):", text);
+      throw new Error("Respon tidak valid saat update lukisan.");
+    }
   } catch (err) {
-    console.error("Gagal update lukisan:", err);
+    console.error("❌ Gagal UPDATE:", err);
     return { status: "error", message: "Gagal update lukisan." };
   }
 }
@@ -68,11 +92,17 @@ export const deleteLukisan = async (id) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id: parseInt(id) }),
     });
 
-    const data = await response.json();
-    return data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await response.json();
+    } else {
+      const text = await response.text();
+      console.warn("⚠️ Respon bukan JSON (DELETE):", text);
+      throw new Error("Respon bukan JSON saat menghapus lukisan.");
+    }
   } catch (error) {
     console.error("❌ Error saat delete:", error);
     return { status: "error", message: "Gagal menghapus lukisan." };
@@ -84,15 +114,20 @@ export async function sendLike(id) {
   try {
     const res = await fetch(`${API_URL}/lukisan/feedback_like.php`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ action: "like", id }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "like", id: parseInt(id) }),
     });
 
-    return await res.json();
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await res.json();
+    } else {
+      const text = await res.text();
+      console.warn("⚠️ Respon bukan JSON (LIKE):", text);
+      throw new Error("Respon tidak valid saat mengirim like.");
+    }
   } catch (err) {
-    console.error("Gagal like:", err);
+    console.error("❌ Gagal like:", err);
     return { status: "error", message: "Gagal mengirim like." };
   }
 }
@@ -102,39 +137,45 @@ export async function sendComment(id, nama, komentar) {
   try {
     const res = await fetch(`${API_URL}/lukisan/feedback_like.php`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        action: "comment",
-        id: parseInt(id),
-        nama,
-        komentar,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "comment", id: parseInt(id), nama, komentar }),
     });
 
-    return await res.json();
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await res.json();
+    } else {
+      const text = await res.text();
+      console.warn("⚠️ Respon bukan JSON (COMMENT):", text);
+      throw new Error("Respon tidak valid saat kirim komentar.");
+    }
   } catch (err) {
-    console.error("Gagal kirim komentar:", err);
+    console.error("❌ Gagal komentar:", err);
     return { status: "error", message: "Gagal mengirim komentar." };
   }
 }
 
 // === GET COMMENT ===
 export async function getComments(id) {
-  try {
-    const res = await fetch(`${API_URL}/lukisan/comment.php?id=${id}`);
-    if (!res.ok) throw new Error("Gagal mengambil komentar.");
+  if (!id) {
+    console.warn("❗ ID lukisan tidak valid");
+    return [];
+  }
 
-    const data = await res.json();
-    if (data.status === "success") {
-      return data.comments || [];
+  try {
+    const res = await fetch(`${API_URL}/lukisan/feedback_like.php?id=${id}`);
+    const contentType = res.headers.get("content-type");
+
+    if (contentType && contentType.includes("application/json")) {
+      const data = await res.json();
+      return data.status === "success" ? data.comments || [] : [];
     } else {
-      console.warn("Komentar gagal diambil:", data.message);
-      return [];
+      const text = await res.text();
+      console.warn("⚠️ Respon bukan JSON (GET COMMENT):", text);
+      throw new Error("Respon bukan JSON saat ambil komentar.");
     }
   } catch (error) {
-    console.error("Error ambil komentar:", error);
+    console.error("❌ Error ambil komentar:", error);
     return [];
   }
 }

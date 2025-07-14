@@ -26,7 +26,7 @@ const GalleryItem = () => {
           pembuat: found.nama_pembuat,
           tanggal: found.tanggal_pembuatan,
         });
-        setLikes(found.likes || 0);
+        setLikes(Number(found.likes || 0));
 
         const komentar = await getComments(found.id);
         setComments(komentar);
@@ -75,14 +75,18 @@ const GalleryItem = () => {
   };
 
   const handleLike = async () => {
+    if (!lukisan?.id) {
+      console.warn("❗ Like gagal: ID lukisan belum tersedia atau null. Cek dulu:");
+      console.log("Data lukisan:", lukisan);
+      return;
+    }
+
     try {
+      console.log("✅ ID dikirim ke sendLike:", lukisan.id); // LOG UTAMA
       const res = await sendLike(lukisan.id);
+
       if (res.status === "success") {
-        const data = await getAllLukisan();
-        const updated = data.find((item) => String(item.id) === id);
-        if (updated && updated.likes !== undefined) {
-          setLikes(updated.likes);
-        }
+        setLikes((prev) => prev + 1); // langsung update lokal
       } else {
         console.warn("Gagal menyimpan like ke backend:", res.message);
       }

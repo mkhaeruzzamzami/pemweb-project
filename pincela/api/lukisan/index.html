@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>🔗 Pilih Mode Tampilan</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px;
+      text-align: center;
+      background-color: #f8f9fa;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #1d4ed8;
+    }
+
+    .note {
+      margin-top: 30px;
+      font-size: 14px;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Akses API Lukisan</h1>
+  <p>Silakan pilih tampilan yang ingin digunakan:</p>
+
+  <a class="btn" href="index.php" target="_blank">📦 JSON API (React)</a>
+  <a class="btn" href="index_display.php" target="_blank">📝 HTML + PHP (Form)</a>
+
+  <div class="note">
+    JSON API digunakan oleh aplikasi frontend React.<br>
+    HTML Form cocok untuk uji coba manual via browser.
+  </div>
+</body>
+</html>

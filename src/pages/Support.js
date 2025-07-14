@@ -24,14 +24,14 @@ const Support = () => {
   const [lukisanList, setLukisanList] = useState([]);
   const [editId, setEditId] = useState(null);
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const fetchData = async () => {
     const data = await getAllLukisan();
     setLukisanList(data);
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,46 +67,94 @@ const Support = () => {
     setEditId(null);
   };
 
-  const handleSubmit = async (e) => {
+  const validateForm = () => {
+    const requiredFields = [
+      "nama_lengkap",
+      "tema",
+      "judul",
+      "tanggal_pembuatan",
+      "email",
+      "nama_pembuat",
+    ];
+    for (let field of requiredFields) {
+      if (!formData[field]) return false;
+    }
+    return true;
+  };
+
+  const handleSubmitCreate = async (e) => {
     e.preventDefault();
-    let response;
+    if (!validateForm()) {
+      alert("❌ Semua kolom wajib diisi.");
+      return;
+    }
 
-    const payload = { ...formData };
-    if (editId) payload.id = editId;
+    try {
+      const response = await sendSupportForm(formData);
+      if (response.status === "success") {
+        alert("✅ Lukisan ditambahkan!");
+        resetForm();
+        fetchData();
+      } else {
+        alert("❌ Gagal: " + response.message);
+      }
+    } catch (err) {
+      console.error("❌ Gagal kirim:", err);
+      alert("❌ Terjadi kesalahan saat mengirim data.");
+    }
+  };
 
-    response = editId ? await updateLukisan(payload) : await sendSupportForm(payload);
+  const handleSubmitUpdate = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      alert("❌ Semua kolom wajib diisi.");
+      return;
+    }
 
-    if (response.status === "success") {
-      alert(editId ? "✅ Lukisan diupdate!" : "✅ Lukisan ditambahkan!");
-      resetForm();
-      fetchData();
-    } else {
-      alert("❌ Gagal: " + response.message);
+    try {
+      const payload = { ...formData, id: editId };
+      const response = await updateLukisan(payload);
+      if (response.status === "success") {
+        alert("✅ Lukisan diupdate!");
+        resetForm();
+        fetchData();
+      } else {
+        alert("❌ Gagal update: " + response.message);
+      }
+    } catch (err) {
+      console.error("❌ Error saat update:", err);
+      alert("❌ Terjadi kesalahan saat update.");
     }
   };
 
   const handleEdit = (item) => {
     setFormData({
-      nama_lengkap: item.nama_lengkap,
-      tema: item.tema,
-      judul: item.judul,
-      tanggal_pembuatan: item.tanggal_pembuatan,
-      email: item.email,
-      nama_pembuat: item.nama_pembuat,
-      deskripsi: item.deskripsi,
+      nama_lengkap: item.nama_lengkap || "",
+      tema: item.tema || "",
+      judul: item.judul || "",
+      tanggal_pembuatan: item.tanggal_pembuatan || "",
+      email: item.email || "",
+      nama_pembuat: item.nama_pembuat || "",
+      deskripsi: item.deskripsi || "",
       gambar: null,
     });
-    setPreviewImage(item.gambar_url ? `http://localhost/pincela/uploads/${item.gambar_url}` : null);
+    setPreviewImage(item.gambar_url ? `http://localhost/pincela/api/uploads/${item.gambar_url}` : null);
     setEditId(item.id);
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Yakin mau hapus lukisan ini?")) {
-      const response = await deleteLukisan(id);
-      if (response.status === "success") {
-        fetchData();
-      } else {
-        alert("❌ Gagal hapus: " + response.message);
+      try {
+        const response = await deleteLukisan(id);
+        if (response.status === "success") {
+          alert("✅ Lukisan dihapus!");
+          fetchData();
+        } else {
+          alert("❌ Gagal hapus: " + response.message);
+        }
+      } catch (err) {
+        console.error("❌ Gagal hapus:", err);
+        alert("❌ Terjadi kesalahan saat menghapus.");
       }
     }
   };
@@ -126,7 +174,7 @@ const Support = () => {
           <h3 className="mb-4">
             {editId ? "Edit Lukisan" : "Tambah Lukisan Baru"}
           </h3>
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={editId ? handleSubmitUpdate : handleSubmitCreate}>
             <Form.Group className="mb-3">
               <Form.Label>Nama Lengkap</Form.Label>
               <Form.Control
@@ -198,9 +246,9 @@ const Support = () => {
               <Form.Control
                 as="textarea"
                 name="deskripsi"
-                rows={3}
                 value={formData.deskripsi}
                 onChange={handleChange}
+                rows={3}
               />
             </Form.Group>
 
@@ -225,11 +273,11 @@ const Support = () => {
             )}
 
             <div className="d-flex justify-content-between">
-              <Button variant="primary" type="submit">
-                {editId ? "Update" : "Simpan Lukisan"}
+              <Button type="submit" variant="primary">
+                {editId ? "Update Lukisan" : "Simpan Lukisan"}
               </Button>
               {editId && (
-                <Button variant="secondary" type="button" onClick={resetForm}>
+                <Button type="button" variant="secondary" onClick={resetForm}>
                   Batal Edit
                 </Button>
               )}
