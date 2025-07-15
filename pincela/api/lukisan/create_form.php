@@ -116,7 +116,7 @@ $stmt->bind_param("issssss", $user_id, $tema, $judul, $tanggal, $nama_pembuat, $
 
 if ($stmt->execute()) {
     echo "<p style='color:green;'>✅ Lukisan berhasil disimpan!</p>";
-    echo "<a href='lihat-read.php'>Lihat Semua Lukisan</a>";
+    echo "<a href='read-page.php'>Lihat Semua Lukisan</a>";
 } else {
     echo "<p style='color:red;'>❌ Gagal menyimpan lukisan: " . $conn->error . "</p>";
 }

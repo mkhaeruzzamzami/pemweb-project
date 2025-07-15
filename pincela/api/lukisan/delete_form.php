@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<p style='color:red;'>❌ Gagal menghapus lukisan: " . $conn->error . "</p>";
         }
     }
-    echo "<a href='index.php'>← Kembali</a><hr>";
+    echo "<a href='index_display.php'>← Kembali</a><hr>";
 }
 
 // Ambil semua judul lukisan
