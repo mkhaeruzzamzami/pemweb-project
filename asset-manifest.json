@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/pemweb-project/static/css/main.d0080aed.css",
-    "main.js": "/pemweb-project/static/js/main.08ee4210.js",
+    "main.js": "/pemweb-project/static/js/main.bfcf32cf.js",
     "static/media/Lukisan_coretabstrak.png": "/pemweb-project/static/media/Lukisan_coretabstrak.0ce9ddffffeda7a83ff8.png",
     "static/media/Lukisan_Masa_Kemerdekaan.webp": "/pemweb-project/static/media/Lukisan_Masa_Kemerdekaan.29852ed2464d59fefd97.webp",
     "static/media/Bg_About.jpg": "/pemweb-project/static/media/Bg_About.2fb910d20d99049d9a3c.jpg",
@@ -10,10 +10,10 @@
     "static/media/contact.jpg": "/pemweb-project/static/media/contact.9d3bc9f70c681ae3894c.jpg",
     "index.html": "/pemweb-project/index.html",
     "main.d0080aed.css.map": "/pemweb-project/static/css/main.d0080aed.css.map",
-    "main.08ee4210.js.map": "/pemweb-project/static/js/main.08ee4210.js.map"
+    "main.bfcf32cf.js.map": "/pemweb-project/static/js/main.bfcf32cf.js.map"
   },
   "entrypoints": [
     "static/css/main.d0080aed.css",
-    "static/js/main.08ee4210.js"
+    "static/js/main.bfcf32cf.js"
   ]
 }
