@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // Simpan URL yang diminta user (misal /about, /collections, dll)
+      sessionStorage.redirect = location.href;
+      // Arahkan balik ke index.html
+      window.location.replace("/");
+    </script>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html>
